@@ -1,7 +1,12 @@
-type Color = 'red' | 'yellow' | 'green' | 'cyan' | 'blue' | 'magenta';
+type Hue = 'red' | 'yellow' | 'green' | 'cyan' | 'blue' | 'magenta';
 type Blightness = 'light' | 'normal' | 'dark';
 type Direction = 'right' | 'down' | 'left' | 'up';
 type LR = 'left' | 'right';
+
+type Color = {
+  hue: Hue;
+  brightness: Blightness;
+}
 
 interface PietImage {
   width: number;
@@ -26,11 +31,12 @@ class PietInterpreter {
 
   private static colorDifference(from: Color, to: Color): [number, number] {
     const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'];
-    const fromIndex = hues.indexOf(from);
-    const toIndex = hues.indexOf(to);
+    const brightnesses = ['light', 'normal', 'dark'];
+    const hueDiff = hues.indexOf(to.hue) - hues.indexOf(from.hue);
+    const brightnessDiff = brightnesses.indexOf(to.brightness) - brightnesses.indexOf(from.brightness);
     return [
-      (toIndex - fromIndex + hues.length) % hues.length,
-      0 // TODO 明度の違いに対応する
+      (hueDiff + hues.length) % hues.length,
+      (brightnessDiff + brightnesses.length) % brightnesses.length,
     ];
   }
 
