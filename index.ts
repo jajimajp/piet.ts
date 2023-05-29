@@ -1,4 +1,4 @@
-import { print1 } from './testcase';
+import { add_1_2, print1 } from './testcase';
 import { getCodel } from './getCodel';
 import { getColorBlockValue } from './getColorBlockValue';
 
@@ -105,7 +105,7 @@ class PietInterpreter {
     const hueDiff = hues.indexOf(to.hue) - hues.indexOf(from.hue);
     const brightnessDiff = brightnesses.indexOf(to.brightness) - brightnesses.indexOf(from.brightness);
     return [
-      (hueDiff + hues.length) % hues.length,
+      (hueDiff + hues.length - 2) % (hues.length - 2), // white, blackを除く
       (brightnessDiff + brightnesses.length) % brightnesses.length,
     ];
   }
@@ -184,7 +184,7 @@ class PietInterpreter {
 const ppProgram = (program: PietImage) => {
   for (let i = 0; i < program.height; i++) {
     let s = '';
-    for (let j = 0; j < program.height; j++) {
+    for (let j = 0; j < program.width; j++) {
       const h = program.getColor(j, i)?.hue;
       if (h === 'red') {
         s += 'r';
@@ -192,6 +192,8 @@ const ppProgram = (program: PietImage) => {
         s += 'm';
       } else if (h === 'black') {
         s += 'b';
+      } else if (h === 'yellow') {
+        s += 'y';
       } else {
         s += ' ';
       }
@@ -199,10 +201,12 @@ const ppProgram = (program: PietImage) => {
     console.log(s);
   }
 };
-ppProgram(print1);
 
-console.log(getCodel(print1, 1, 0, 'right', 'left')); // should be (2, 2)
-console.log(getColorBlockValue(print1, 1, 1)) // should be 4
+// ppProgram(add_1_2);
 
-const it = new PietInterpreter(print1);
+// test utils
+// console.log(getCodel(print1, 1, 0, 'right', 'left')); // should be (2, 2)
+// console.log(getColorBlockValue(print1, 1, 1)) // should be 4
+
+const it = new PietInterpreter(add_1_2);
 it.run();

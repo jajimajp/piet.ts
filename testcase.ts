@@ -27,3 +27,38 @@ export const print1: PietImage = {
     }
   }
 }
+
+export const add_1_2: PietImage = {
+  width: 7,
+  height: 5,
+  getColor: (x, y): Color => {
+    const colors: Array<[Array<[number, number]>, Color]> = [
+      [
+        [[0, 0], [5, 1], [5, 2], [5, 3]],
+        { hue: 'red', brightness: 'light' }
+      ],
+      [
+        [[1, 0], [1, 1]],
+        { hue: 'red', brightness: 'normal' }
+      ],
+      [
+        [[2, 0], [2, 1], [2, 2]],
+        { hue: 'red', brightness: 'dark' }
+      ],
+      [
+        [[3, 0], [3, 1], [3, 2], [4, 2]],
+        { hue: 'yellow', brightness: 'dark' }
+      ],
+      [
+        [[4, 1], [5, 0], [6, 1], [4, 3], [5, 4], [6, 3]],
+        { hue: 'black' } satisfies Color
+      ]
+    ];
+    for (let i = 0; i < colors.length; i++) {
+      if (includeXY(colors[i][0], x, y)) {
+        return colors[i][1];
+      }
+    }
+    return { hue: 'white' };
+  }
+}
