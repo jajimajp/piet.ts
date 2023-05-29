@@ -177,7 +177,9 @@ class PietInterpreter {
         const top = this.stack[this.stack.length - 1];
         const top2 = this.stack[this.stack.length - 2];
         if (top2 !== 0) {
-          this.stack.splice(this.stack.length - 2, 2, top2 % top);
+          // see https://www.dangermouse.net/esoteric/piet.html
+          const mod = (top2 % top + top) % top;
+          this.stack.splice(this.stack.length - 2, 2, mod);
         }
         // ↑ (仕様より) If a divide by zero occurs, it is handled as an implementation-dependent error,
         // though simply ignoring the command is recommended.
