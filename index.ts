@@ -1,4 +1,5 @@
 import { print1 } from './testcase';
+import { getCodel } from './getCodel';
 
 const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'black', 'white'] as const;
 export type Hue = typeof hues[number];
@@ -6,6 +7,11 @@ const brightnesses = ['light', 'normal', 'dark'] as const;
 export type Blightness = typeof brightnesses[number];
 export type Direction = 'right' | 'down' | 'left' | 'up';
 export type LR = 'left' | 'right';
+
+export interface Position {
+  x: number;
+  y: number;
+}
 
 export type Color = {
   hue: Exclude<Hue, 'black' | 'white'>;
@@ -17,10 +23,23 @@ export type Color = {
   hue: 'white';
 }
 
+export const isSameColor = (a: Color, b: Color): boolean => {
+  if (a.hue !== b.hue) {
+    return false;
+  } else if (a.hue === 'black' || a.hue === 'white') {
+    return true;
+  } else {
+    if (b.hue === 'black' || b.hue === 'white') {
+      throw Error('this code should not be executed');
+    }
+    return a.brightness === b.brightness
+  }
+}
+
 export interface PietImage {
   width: number;
   height: number;
-  getColor: (x: number, y: number) => Color | null;
+  getColor: (x: number, y: number) => Color | undefined;
 }
 
 class PietInterpreter {
@@ -80,7 +99,7 @@ class PietInterpreter {
       const currentColor = this.image.getColor(this.x, this.y);
       this.move();
       const nextColor = this.image.getColor(this.x, this.y);
-      if (currentColor !== null && nextColor !== null) {
+      if (currentColor !== undefined && nextColor !== undefined) {
         this.executeCommand(currentColor, nextColor);
       }
     }
@@ -107,3 +126,5 @@ const ppProgram = (program: PietImage) => {
   }
 };
 ppProgram(print1);
+
+console.log(getCodel(print1, 1, 0, 'right', 'left'));
