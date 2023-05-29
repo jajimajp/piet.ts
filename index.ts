@@ -1,11 +1,13 @@
-const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'black', 'white'] as const;
-type Hue = typeof hues[number];
-const brightnesses = ['light', 'normal', 'dark'] as const;
-type Blightness = typeof brightnesses[number];
-type Direction = 'right' | 'down' | 'left' | 'up';
-type LR = 'left' | 'right';
+import { print1 } from './testcase';
 
-type Color = {
+const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'black', 'white'] as const;
+export type Hue = typeof hues[number];
+const brightnesses = ['light', 'normal', 'dark'] as const;
+export type Blightness = typeof brightnesses[number];
+export type Direction = 'right' | 'down' | 'left' | 'up';
+export type LR = 'left' | 'right';
+
+export type Color = {
   hue: Exclude<Hue, 'black' | 'white'>;
   brightness: Blightness;
 } | {
@@ -15,7 +17,7 @@ type Color = {
   hue: 'white';
 }
 
-interface PietImage {
+export interface PietImage {
   width: number;
   height: number;
   getColor: (x: number, y: number) => Color | null;
@@ -84,3 +86,24 @@ class PietInterpreter {
     }
   }
 }
+
+// DEBUG 画像をテキストとしてプリントする
+const ppProgram = (program: PietImage) => {
+  for (let i = 0; i < program.height; i++) {
+    let s = '';
+    for (let j = 0; j < program.height; j++) {
+      const h = program.getColor(j, i)?.hue;
+      if (h === 'red') {
+        s += 'r';
+      } else if (h === 'magenta') {
+        s += 'm';
+      } else if (h === 'black') {
+        s += 'b';
+      } else {
+        s += ' ';
+      }
+    }
+    console.log(s);
+  }
+};
+ppProgram(print1);
