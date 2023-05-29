@@ -45,6 +45,12 @@ const rotateDP = (curr: Direction, amount: number): Direction => {
   else /* amount > 0 */ { return rotateDP(nextDP(curr), amount - 1) }
 }
 
+const toggleCC = (curr: LR) => curr === 'left' ? 'right' : 'left';
+// 計算量改善の余地あり
+const toggleCCTimes = (curr: LR, times: number): LR =>
+  times < 0 ? toggleCCTimes(curr, -times)
+            : times === 0 ? curr : toggleCCTimes(toggleCC(curr), times - 1);
+
 export interface Position {
   x: number;
   y: number;
@@ -142,7 +148,65 @@ class PietInterpreter {
       if (this.stack.length >= 2) {
         const op1 = this.stack[this.stack.length - 1];
         const op2 = this.stack[this.stack.length - 2];
-        this.stack.splice(this.stack.length, 1, op1 + op2);
+        this.stack.splice(this.stack.length - 2, 2, op1 + op2);
+      }
+    } else if (hueDiff === 1 && lightnessDiff === 1) { // subtract
+      if (this.stack.length >= 2) {
+        const top = this.stack[this.stack.length - 1];
+        const top2 = this.stack[this.stack.length - 2];
+        this.stack.splice(this.stack.length - 2, 2, top2 - top);
+      }
+    } else if (hueDiff === 1 && lightnessDiff === 2) { // multiply
+      if (this.stack.length >= 2) {
+        const op1 = this.stack[this.stack.length - 1];
+        const op2 = this.stack[this.stack.length - 2];
+        this.stack.splice(this.stack.length - 2, 2, op1 * op2);
+      }
+    } else if (hueDiff === 2 && lightnessDiff === 0) { // divide
+      if (this.stack.length >= 2) {
+        const top = this.stack[this.stack.length - 1];
+        const top2 = this.stack[this.stack.length - 2];
+        if (top2 !== 0) {
+          this.stack.splice(this.stack.length - 2, 2, top2 / top);
+        }
+        // ↑ (仕様より) If a divide by zero occurs, it is handled as an implementation-dependent error,
+        // though simply ignoring the command is recommended.
+      }
+    } else if (hueDiff === 2 && lightnessDiff === 1) { // mod
+      if (this.stack.length >= 2) {
+        const top = this.stack[this.stack.length - 1];
+        const top2 = this.stack[this.stack.length - 2];
+        if (top2 !== 0) {
+          this.stack.splice(this.stack.length - 2, 2, top2 % top);
+        }
+        // ↑ (仕様より) If a divide by zero occurs, it is handled as an implementation-dependent error,
+        // though simply ignoring the command is recommended.
+      }
+    } else if (hueDiff === 2 && lightnessDiff === 2) { // not
+      if (this.stack.length >= 1) {
+        this.stack[this.stack.length - 1] = 
+          this.stack[this.stack.length - 1] === 0 ? 1 : 0;
+      }
+    } else if (hueDiff === 3 && lightnessDiff === 0) { // greater
+      if (this.stack.length >= 2) {
+        const top = this.stack[this.stack.length - 1];
+        const top2 = this.stack[this.stack.length - 2];
+        this.stack.splice(this.stack.length - 2, 2, (top < top2 ? 1 : 0));
+      }
+    } else if (hueDiff === 3 && lightnessDiff === 1) { // pointer
+      const amount = this.stack.pop();
+      if (amount !== undefined) {
+        this.dp = rotateDP(this.dp, amount);
+      }
+    } else if (hueDiff === 3 && lightnessDiff === 2) { // switch
+      const amount = this.stack.pop();
+      if (amount !== undefined) {
+        this.cc = toggleCCTimes(this.cc, amount);
+      }
+    } else if (hueDiff === 4 && lightnessDiff === 0) { // duplicaate
+      const top = this.stack.pop();
+      if (top !== undefined) {
+        this.stack.push(top);
       }
     } else if (hueDiff === 0 && lightnessDiff === 1) { // push
       this.stack.push(this.previousCodelSize);
