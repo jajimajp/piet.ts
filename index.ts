@@ -1,11 +1,18 @@
-type Hue = 'red' | 'yellow' | 'green' | 'cyan' | 'blue' | 'magenta';
-type Blightness = 'light' | 'normal' | 'dark';
+const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'black', 'white'] as const;
+type Hue = typeof hues[number];
+const brightnesses = ['light', 'normal', 'dark'] as const;
+type Blightness = typeof brightnesses[number];
 type Direction = 'right' | 'down' | 'left' | 'up';
 type LR = 'left' | 'right';
 
 type Color = {
-  hue: Hue;
+  hue: Exclude<Hue, 'black' | 'white'>;
   brightness: Blightness;
+} | {
+  // blackとwhiteのユニオンとして書くと型ガードが効かない
+  hue: 'black';
+} | {
+  hue: 'white';
 }
 
 interface PietImage {
@@ -30,8 +37,9 @@ class PietInterpreter {
   }
 
   private static colorDifference(from: Color, to: Color): [number, number] {
-    const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta'];
-    const brightnesses = ['light', 'normal', 'dark'];
+    if (from.hue === 'black' || from.hue === 'white' || to.hue === 'black' || to.hue === 'white') {
+      throw Error('TODO: black and white is currently not supported.');
+    }
     const hueDiff = hues.indexOf(to.hue) - hues.indexOf(from.hue);
     const brightnessDiff = brightnesses.indexOf(to.brightness) - brightnesses.indexOf(from.brightness);
     return [
