@@ -6,7 +6,7 @@ import { getSize } from './readPiet';
 const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'black', 'white'] as const;
 export type Hue = typeof hues[number];
 const brightnesses = ['light', 'normal', 'dark'] as const;
-export type Blightness = typeof brightnesses[number];
+export type Brightness = typeof brightnesses[number];
 export type Direction = 'right' | 'down' | 'left' | 'up';
 export type LR = 'left' | 'right';
 
@@ -59,7 +59,7 @@ export interface Position {
 
 export type Color = {
   hue: Exclude<Hue, 'black' | 'white'>;
-  brightness: Blightness;
+  brightness: Brightness;
 } | {
   // blackとwhiteのユニオンとして書くと型ガードが効かない
   hue: 'black';
