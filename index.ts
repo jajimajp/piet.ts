@@ -1,6 +1,7 @@
 import { add_1_2, print1 } from './testcase';
 import { getCodel } from './getCodel';
 import { getColorBlockValue } from './getColorBlockValue';
+import { getSize } from './readPiet';
 
 const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'black', 'white'] as const;
 export type Hue = typeof hues[number];
@@ -276,3 +277,11 @@ const ppProgram = (program: PietImage) => {
 
 const it = new PietInterpreter(add_1_2);
 it.run();
+
+const p1 = `lr r w k  w
+w  r k dm k
+w  r r dm k
+w  w k dm k
+w  w w k  w
+`;
+getSize(p1);
