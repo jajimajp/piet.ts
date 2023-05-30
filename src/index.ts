@@ -142,7 +142,12 @@ export class PietInterpreter {
   private executeCommand(from: Color, to: Color): void {
     const [hueDiff, lightnessDiff] = PietInterpreter.colorDifference(from, to);
 
-    if (hueDiff === 1 && lightnessDiff === 0) { // add
+    if (hueDiff === 0 && lightnessDiff === 1) { // push
+      console.log('push', this.previousCodelSize);
+      this.stack.push(this.previousCodelSize);
+    } else if (hueDiff === 0 && lightnessDiff === 1) { // pop
+      this.stack.push(this.previousCodelSize);
+    } else if (hueDiff === 1 && lightnessDiff === 0) { // add
       if (this.stack.length >= 2) {
         const op1 = this.stack[this.stack.length - 1];
         const op2 = this.stack[this.stack.length - 2];
@@ -208,8 +213,6 @@ export class PietInterpreter {
       if (top !== undefined) {
         this.stack.push(top);
       }
-    } else if (hueDiff === 0 && lightnessDiff === 1) { // push
-      this.stack.push(this.previousCodelSize);
     } else if (hueDiff === 5 && lightnessDiff === 1) { // out(number)
       const top = this.stack.pop();
       if (top !== undefined) {
@@ -221,6 +224,11 @@ export class PietInterpreter {
 
   public run(): { stack: number[], output: string } {
     let steps = 0;
+    // HACK: 最初の位置がDP, CC方向の場所でないため、移動する
+    // move()の改良で、最初の位置も考慮に入れて一般化できそう
+    const newPos = getCodel(this.image, this.x, this.y, this.dp, this.cc);
+    this.x = newPos.x;
+    this.y = newPos.y;
     try {
       while (this.x >= 0 && this.y >= 0 && this.x < this.image.width && this.y < this.image.height) {
         const currentColor = this.image.getColor(this.x, this.y);
