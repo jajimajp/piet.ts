@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { add_1_2, print1 } from './testcase';
 import { getCodel } from './getCodel';
 import { getColorBlockValue } from './getColorBlockValue';
@@ -275,13 +276,12 @@ const ppProgram = (program: PietImage) => {
 // console.log(getCodel(print1, 1, 0, 'right', 'left')); // should be (2, 2)
 // console.log(getColorBlockValue(print1, 1, 1)) // should be 4
 
-
-const p1 = `lr r w k  w
-w  r k dm k
-w  r r dm k
-w  w k dm k
-w  w w k  w
-`;
-const p = readPiet(p1);
+const p2 = ` lr r  dr dy w  k  w
+w  r  dr dy k  lr k
+w  w  dr dy dy lr w
+w  w  w  w  k  lr k
+w  w  w  w  w  k  w
+`
+const p = readPiet(p2);
 const it = new PietInterpreter(p);
 it.run();
