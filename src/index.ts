@@ -145,8 +145,8 @@ export class PietInterpreter {
     if (hueDiff === 0 && lightnessDiff === 1) { // push
       console.log('push', this.previousCodelSize);
       this.stack.push(this.previousCodelSize);
-    } else if (hueDiff === 0 && lightnessDiff === 1) { // pop
-      this.stack.push(this.previousCodelSize);
+    } else if (hueDiff === 0 && lightnessDiff === 2) { // pop
+      this.stack.pop();
     } else if (hueDiff === 1 && lightnessDiff === 0) { // add
       if (this.stack.length >= 2) {
         const op1 = this.stack[this.stack.length - 1];

@@ -22,3 +22,10 @@ test('code: push 4', () => {
   const it = new PietInterpreter(image);
   expect(it.run()).toStrictEqual({ stack: [4], output: "" });
 })
+
+test('code: pop 1', () => {
+  const src = fs.readFileSync('./testcase/pop1.piet').toString();
+  const image = readPiet(src);
+  const it = new PietInterpreter(image, [1, 2]);
+  expect(it.run()).toStrictEqual({ stack: [1], output: "" });
+})
