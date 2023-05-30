@@ -1,5 +1,3 @@
-import fs from 'fs';
-import { add_1_2, print1 } from './testcase';
 import { getCodel } from './getCodel';
 import { getColorBlockValue } from './getColorBlockValue';
 import { readPiet } from './readPiet';
@@ -87,21 +85,19 @@ export interface PietImage {
   getColor: (x: number, y: number) => Color | undefined;
 }
 
-class PietInterpreter {
+export class PietInterpreter {
   private x: number;
   private y: number;
   private dp: Direction;
   private cc: LR;
-  private stack: number[];
   private previousCodelSize: number;
   private output: string;
 
-  constructor(private image: PietImage) {
+  constructor(private image: PietImage, private stack: number[] = []) {
     this.x = 0;
     this.y = 0;
     this.dp = 'right';
     this.cc = 'left';
-    this.stack = [];
     this.previousCodelSize = 0;
     this.output = '';
   }
@@ -223,7 +219,7 @@ class PietInterpreter {
     // TODO 他のコマンドも実装する
   }
 
-  public run(): void {
+  public run(): { stack: number[], output: string } {
     let steps = 0;
     try {
       while (this.x >= 0 && this.y >= 0 && this.x < this.image.width && this.y < this.image.height) {
@@ -237,13 +233,12 @@ class PietInterpreter {
         steps++;
         if (steps > 100) {
           console.log('steps > 100');
-          return;
+          return { stack: this.stack, output: this.output };
         }
       }
     } catch(e) {
     } finally {
-      console.log(this.output);
-      console.log({ stack: this.stack });
+      return { stack: this.stack, output: this.output };
     }
   }
 }
