@@ -2,9 +2,9 @@
   "name": "piet.ts",
   "version": "1.0.0",
   "description": "Piet interpreter written in TypeScript",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node ."
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/jajimajp/piet.ts#readme",
   "devDependencies": {
+    "ts-node": "^10.9.1",
     "typescript": "^5.0.4"
   }
 }
