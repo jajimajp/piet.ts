@@ -15,3 +15,10 @@ test('code: print 1 + 2', () => {
   const it = new PietInterpreter(image);
   expect(it.run()).toStrictEqual({ stack: [], output: "3" });
 })
+
+test('code: push 4', () => {
+  const src = fs.readFileSync('./testcase/push4.piet').toString();
+  const image = readPiet(src);
+  const it = new PietInterpreter(image);
+  expect(it.run()).toStrictEqual({ stack: [4], output: "" });
+})
