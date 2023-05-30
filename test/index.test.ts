@@ -1,6 +1,6 @@
 import fs from 'fs';
-import { readPiet } from './src/readPiet';
-import { PietInterpreter } from './src';
+import { readPiet } from '../src/readPiet';
+import { PietInterpreter } from '../src';
 
 test('code: print 1', () => {
   const src = fs.readFileSync('./testcase/out1.piet').toString();
