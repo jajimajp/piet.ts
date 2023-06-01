@@ -158,3 +158,10 @@ test('code: out(char)', () => {
   const it = new PietInterpreter(image, [65]);
   expect(it.run()).toStrictEqual({ stack: [], output: "A" });
 })
+
+test('helloworld', () => {
+  const src = fs.readFileSync('./testcase/helloworld.piet').toString();
+  const image = readPiet(src);
+  const it = new PietInterpreter(image);
+  expect(it.run().output).toBe('Hello, world!\n');
+})
