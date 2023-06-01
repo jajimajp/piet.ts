@@ -1,6 +1,5 @@
 import { getCodel } from './getCodel';
 import { getColorBlockValue } from './getColorBlockValue';
-import { readPiet } from './readPiet';
 
 const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'black', 'white'] as const;
 export type Hue = typeof hues[number];
@@ -314,19 +313,3 @@ const ppProgram = (program: PietImage) => {
     console.log(s);
   }
 };
-
-// ppProgram(add_1_2);
-
-// test utils
-// console.log(getCodel(print1, 1, 0, 'right', 'left')); // should be (2, 2)
-// console.log(getColorBlockValue(print1, 1, 1)) // should be 4
-
-const p2 = ` lr r  dr dy w  k  w
-w  r  dr dy k  lr k
-w  w  dr dy dy lr w
-w  w  w  w  k  lr k
-w  w  w  w  w  k  w
-`
-const p = readPiet(p2);
-const it = new PietInterpreter(p);
-it.run();
