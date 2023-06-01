@@ -211,7 +211,7 @@ export class PietInterpreter {
     } else if (hueDiff === 4 && lightnessDiff === 0) { // duplicaate
       const top = this.stack.pop();
       if (top !== undefined) {
-        this.stack.push(top);
+        this.stack.push(top, top);
       }
     } else if (hueDiff === 5 && lightnessDiff === 1) { // out(number)
       const top = this.stack.pop();
