@@ -261,7 +261,6 @@ export class PietInterpreter {
         this.output += String.fromCodePoint(top);
       }
     }
-    // TODO 他のコマンドも実装する
   }
 
   public run(input?: string): { stack: number[], output: string } {
