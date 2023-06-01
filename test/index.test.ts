@@ -117,7 +117,12 @@ test('code: duplicate [1]', () => {
   expect(it.run()).toStrictEqual({ stack: [1, 1], output: "" });
 })
 
-// TODO: test for roll, in(num), in(char)
+test('code: roll [1, 2, 3, 4, 3, 2]', () => {
+  const src = fs.readFileSync('./testcase/roll.piet').toString();
+  const image = readPiet(src);
+  const it = new PietInterpreter(image, [1, 2, 3, 4, 3, 2]);
+  expect(it.run()).toStrictEqual({ stack: [1, 3, 4, 2], output: "" });
+})
 
 test('code: in(number)', () => {
   const src = fs.readFileSync('./testcase/in_num.piet').toString();

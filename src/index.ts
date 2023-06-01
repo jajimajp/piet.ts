@@ -45,6 +45,19 @@ const rotateDP = (curr: Direction, amount: number): Direction => {
   else /* amount > 0 */ { return rotateDP(nextDP(curr), amount - 1) }
 }
 
+const rollStack = (stack: number[], depth: number, roll: number): number[] => {
+  const indexFor = (i: number) => {
+    const dir = roll > 0 ? -1 : 1;
+    if (i < stack.length - depth) {
+      return i;
+    } else {
+      return (((dir * roll) + i - (stack.length - depth)) % depth + depth) % depth + (stack.length - depth);
+      // TODO: cleanup
+    }
+  }
+  return stack.map((_, i) => stack[indexFor(i)]);
+}
+
 const toggleCC = (curr: LR) => curr === 'left' ? 'right' : 'left';
 // 計算量改善の余地あり
 const toggleCCTimes = (curr: LR, times: number): LR =>
@@ -147,7 +160,6 @@ export class PietInterpreter {
     const [hueDiff, lightnessDiff] = PietInterpreter.colorDifference(from, to);
 
     if (hueDiff === 0 && lightnessDiff === 1) { // push
-      console.log('push', this.previousCodelSize);
       this.stack.push(this.previousCodelSize);
     } else if (hueDiff === 0 && lightnessDiff === 2) { // pop
       this.stack.pop();
@@ -216,6 +228,14 @@ export class PietInterpreter {
       const top = this.stack.pop();
       if (top !== undefined) {
         this.stack.push(top, top);
+      }
+    } else if (hueDiff === 4 && lightnessDiff === 1) { // roll
+      if (this.stack.length >= 2) {
+        const top = this.stack.pop();
+        const top2 = this.stack.pop();
+        if (top && top2) {
+          this.stack = rollStack(this.stack, top2, top);
+        }
       }
     } else if (hueDiff === 4 && lightnessDiff === 2) { // in(number)
       let match = /[+-]?[0-9]+/.exec(this.input.slice(this.inputIndex));
