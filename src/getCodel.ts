@@ -1,8 +1,11 @@
-import { PietImage, Direction, LR, isSameColor, Position } from ".";
+import { PietImage, Position } from '.';
+import { isSameColor } from './color';
+import { DP } from '../src/dp';
+import { CC } from './cc';
 
 // (x, y)の色から同じ色の範囲で、最もDP方向に進んでいる中で、DPに向かって最もCC方向の座標を探索
 // とりあえず毎回深さ優先探索をする 最初に一度算出してキャッシュすれば高速化できる
-export const getCodel = (image: PietImage, x: number, y: number, dp: Direction, cc: LR): Position => {
+export const getCodel = (image: PietImage, x: number, y: number, dp: DP, cc: CC): Position => {
   // DP方向の観点でaがbより奥にあるか
   // true = a is better than b
   const dpBetter = (a: Position, b: Position): boolean => {

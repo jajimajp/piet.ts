@@ -1,4 +1,5 @@
-import { PietImage, isSameColor } from ".";
+import { PietImage } from '.';
+import { isSameColor } from './color';
 
 // 指定された座標から同じ色で到達できる範囲のカラーブロックの面積
 export const getColorBlockValue = (image: PietImage, x: number, y: number): number => {

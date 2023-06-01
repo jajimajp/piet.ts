@@ -1,4 +1,5 @@
-import { PietImage, Color, Hue } from ".";
+import { PietImage } from '.';
+import { Color, Hue } from './color';
 
 // .pietファイルを読み込む
 // content: .pietファイルの中身
@@ -34,7 +35,7 @@ const getSize = (content: string): { width: number, height: number } => {
 }
 
 const getLineColors = (line: string): Array<Color> => {
-  let brightness: undefined | 'normal' | 'light' | 'dark' = undefined;
+  let lightness: undefined | 'normal' | 'light' | 'dark' = undefined;
   let hue: undefined | Hue = undefined;
   let color: undefined | Color = undefined;
   let lineColors: Array<Color> = [];
@@ -42,74 +43,74 @@ const getLineColors = (line: string): Array<Color> => {
   for (let idx = 0; idx < line.length; idx++) {
     switch (line[idx]) {
       case 'l':
-        if (brightness) {
-          throw Error('invalid input: back to back brightness specification');
+        if (lightness) {
+          throw Error('invalid input: back to back lightness specification');
         }
-        brightness = 'light';
+        lightness = 'light';
         break;
       case 'n':
-        if (brightness) {
-          throw Error('invalid input: back to back brightness specification');
+        if (lightness) {
+          throw Error('invalid input: back to back lightness specification');
         }
-        brightness = 'normal';
+        lightness = 'normal';
         break;
       case 'd':
-        if (brightness) {
-          throw Error('invalid input: back to back brightness specification');
+        if (lightness) {
+          throw Error('invalid input: back to back lightness specification');
         }
-        brightness = 'dark';
+        lightness = 'dark';
         break;
       // Specify hue
       // NOTE: without break
       case 'r':
         if (hue) { throw Error('invalid input: back to back hue specification'); }
         hue = 'red';
-        if (!brightness) { brightness = 'normal'; }
-        color = { hue, brightness };
+        if (!lightness) { lightness = 'normal'; }
+        color = { hue, lightness };
         break;
       case 'y':
         if (hue) { throw Error('invalid input: back to back hue specification'); }
         hue = 'yellow';
-        if (!brightness) { brightness = 'normal'; }
-        color = { hue, brightness };
+        if (!lightness) { lightness = 'normal'; }
+        color = { hue, lightness };
         break;
       case 'g':
         if (hue) { throw Error('invalid input: back to back hue specification'); }
         hue = 'green';
-        if (!brightness) { brightness = 'normal'; }
-        color = { hue, brightness };
+        if (!lightness) { lightness = 'normal'; }
+        color = { hue, lightness };
         break;
       case 'c':
         if (hue) { throw Error('invalid input: back to back hue specification'); }
         hue = 'cyan';
-        if (!brightness) { brightness = 'normal'; }
-        color = { hue, brightness };
+        if (!lightness) { lightness = 'normal'; }
+        color = { hue, lightness };
         break;
       case 'b':
         if (hue) { throw Error('invalid input: back to back hue specification'); }
         hue = 'blue';
-        if (!brightness) { brightness = 'normal'; }
-        color = { hue, brightness };
+        if (!lightness) { lightness = 'normal'; }
+        color = { hue, lightness };
         break;
       case 'm':
         if (hue) { throw Error('invalid input: back to back hue specification'); }
         hue = 'magenta';
-        if (!brightness) { brightness = 'normal'; }
-        color = { hue, brightness };
+        if (!lightness) { lightness = 'normal'; }
+        color = { hue, lightness };
         break;
       case 'k':
         if (hue) { throw Error('invalid input: back to back hue specification'); }
         hue = 'black';
-        if (brightness) {
-          throw Error('invalid input: specify brightness of black is not allowed');
+        if (lightness) {
+          throw Error('invalid input: specify lightness of black is not allowed');
         }
         color = { hue };
         break;
       case 'w':
         if (hue) { throw Error('invalid input: back to back hue specification'); }
         hue = 'white';
-        if (brightness) {
-          throw Error('invalid input: specify brightness of white is not allowed');
+        if (lightness) {
+          throw Error('invalid input: specify lightness of white is not allowed');
         }
         color = { hue };
         break;
@@ -118,7 +119,7 @@ const getLineColors = (line: string): Array<Color> => {
     }
     if (color) {
       lineColors.push(color);
-      brightness = undefined;
+      lightness = undefined;
       hue = undefined;
       color = undefined;
     }

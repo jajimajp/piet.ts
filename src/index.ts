@@ -1,48 +1,8 @@
 import { getCodel } from './getCodel';
 import { getColorBlockValue } from './getColorBlockValue';
-
-const hues = ['red', 'yellow', 'green', 'cyan', 'blue', 'magenta', 'black', 'white'] as const;
-export type Hue = typeof hues[number];
-const brightnesses = ['light', 'normal', 'dark'] as const;
-export type Brightness = typeof brightnesses[number];
-export type Direction = 'right' | 'down' | 'left' | 'up';
-export type LR = 'left' | 'right';
-
-// clockwise
-const nextDP = (dp: Direction) => {
-  switch (dp) {
-    case 'right':
-      return 'down';
-    case 'down':
-      return 'left';
-    case 'left':
-      return 'up';
-    case 'up':
-      return 'right';
-  }
-}
-
-// anticlockwise
-const previousDP = (dp: Direction) => {
-  switch (dp) {
-    case 'right':
-      return 'up';
-    case 'down':
-      return 'right';
-    case 'left':
-      return 'down';
-    case 'up':
-      return 'left';
-  }
-}
-
-// rotates the DP clockwise that many steps (anticlockwise if negative).
-// TODO: 整数に変換して剰余を取れば高速化できる
-const rotateDP = (curr: Direction, amount: number): Direction => {
-  if (amount === 0) { return curr }
-  else if (amount < 0) { return rotateDP(previousDP(curr), amount + 1) }
-  else /* amount > 0 */ { return rotateDP(nextDP(curr), amount - 1) }
-}
+import { DP, rotateDP } from './dp';
+import { Color, colorDiff } from './color';
+import { CC, toggleCCTimes } from './cc';
 
 const rollStack = (stack: number[], depth: number, roll: number): number[] => {
   const indexFor = (i: number) => {
@@ -57,38 +17,9 @@ const rollStack = (stack: number[], depth: number, roll: number): number[] => {
   return stack.map((_, i) => stack[indexFor(i)]);
 }
 
-const toggleCC = (curr: LR) => curr === 'left' ? 'right' : 'left';
-// 計算量改善の余地あり
-const toggleCCTimes = (curr: LR, times: number): LR =>
-  times < 0 ? toggleCCTimes(curr, -times)
-            : times === 0 ? curr : toggleCCTimes(toggleCC(curr), times - 1);
-
 export interface Position {
   x: number;
   y: number;
-}
-
-export type Color = {
-  hue: Exclude<Hue, 'black' | 'white'>;
-  brightness: Brightness;
-} | {
-  // blackとwhiteのユニオンとして書くと型ガードが効かない
-  hue: 'black';
-} | {
-  hue: 'white';
-}
-
-export const isSameColor = (a: Color, b: Color): boolean => {
-  if (a.hue !== b.hue) {
-    return false;
-  } else if (a.hue === 'black' || a.hue === 'white') {
-    return true;
-  } else {
-    if (b.hue === 'black' || b.hue === 'white') {
-      throw Error('this code should not be executed');
-    }
-    return a.brightness === b.brightness
-  }
 }
 
 export interface PietImage {
@@ -100,8 +31,8 @@ export interface PietImage {
 export class PietInterpreter {
   private x: number;
   private y: number;
-  private dp: Direction;
-  private cc: LR;
+  private dp: DP;
+  private cc: CC;
   private previousCodelSize: number;
   private input: string;
   private output: string;
@@ -116,18 +47,6 @@ export class PietInterpreter {
     this.input = '';
     this.output = '';
     this.inputIndex = 0;
-  }
-
-  private static colorDifference(from: Color, to: Color): [number, number] {
-    if (from.hue === 'black' || from.hue === 'white' || to.hue === 'black' || to.hue === 'white') {
-      throw Error('TODO: black and white is currently not supported.');
-    }
-    const hueDiff = hues.indexOf(to.hue) - hues.indexOf(from.hue);
-    const brightnessDiff = brightnesses.indexOf(to.brightness) - brightnesses.indexOf(from.brightness);
-    return [
-      (hueDiff + hues.length - 2) % (hues.length - 2), // white, blackを除く
-      (brightnessDiff + brightnesses.length) % brightnesses.length,
-    ];
   }
 
   private move(): void {
@@ -155,8 +74,11 @@ export class PietInterpreter {
     this.y = newPos.y;
   }
 
-  private executeCommand(from: Color, to: Color): void {
-    const [hueDiff, lightnessDiff] = PietInterpreter.colorDifference(from, to);
+  private executeCommand(
+    from: Exclude<Color, { hue: 'black' | 'white'}>,
+    to: Exclude<Color, { hue: 'black' | 'white'}>
+  ): void {
+    const {hueDiff, lightnessDiff} = colorDiff(from, to);
 
     if (hueDiff === 0 && lightnessDiff === 1) { // push
       this.stack.push(this.previousCodelSize);
@@ -277,6 +199,12 @@ export class PietInterpreter {
         this.move();
         const nextColor = this.image.getColor(this.x, this.y);
         if (currentColor !== undefined && nextColor !== undefined) {
+          if (currentColor.hue === 'white' || nextColor.hue === 'white') {
+            throw Error('white is curreltly not supported');
+          }
+          if (currentColor.hue === 'black' || nextColor.hue === 'black') {
+            throw Error('black is curreltly not supported');
+          }
           this.executeCommand(currentColor, nextColor);
         }
         steps++;
@@ -291,25 +219,3 @@ export class PietInterpreter {
     }
   }
 }
-
-// DEBUG 画像をテキストとしてプリントする
-const ppProgram = (program: PietImage) => {
-  for (let i = 0; i < program.height; i++) {
-    let s = '';
-    for (let j = 0; j < program.width; j++) {
-      const h = program.getColor(j, i)?.hue;
-      if (h === 'red') {
-        s += 'r';
-      } else if (h === 'magenta') {
-        s += 'm';
-      } else if (h === 'black') {
-        s += 'b';
-      } else if (h === 'yellow') {
-        s += 'y';
-      } else {
-        s += ' ';
-      }
-    }
-    console.log(s);
-  }
-};
