@@ -126,4 +126,9 @@ test('code: out(number)', () => {
   expect(it.run()).toStrictEqual({ stack: [], output: "1" });
 })
 
-// TODO: test for out(char)
+test('code: out(char)', () => {
+  const src = fs.readFileSync('./testcase/out_char.piet').toString();
+  const image = readPiet(src);
+  const it = new PietInterpreter(image, [65]);
+  expect(it.run()).toStrictEqual({ stack: [], output: "A" });
+})

@@ -218,6 +218,11 @@ export class PietInterpreter {
       if (top !== undefined) {
         this.output += top.toString();
       }
+    } else if (hueDiff === 5 && lightnessDiff === 2) { // out(char)
+      const top = this.stack.pop();
+      if (top !== undefined) {
+        this.output += String.fromCodePoint(top);
+      }
     }
     // TODO 他のコマンドも実装する
   }
