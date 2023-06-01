@@ -91,7 +91,9 @@ export class PietInterpreter {
   private dp: Direction;
   private cc: LR;
   private previousCodelSize: number;
+  private input: string;
   private output: string;
+  private inputIndex: number;
 
   constructor(private image: PietImage, private stack: number[] = []) {
     this.x = 0;
@@ -99,7 +101,9 @@ export class PietInterpreter {
     this.dp = 'right';
     this.cc = 'left';
     this.previousCodelSize = 0;
+    this.input = '';
     this.output = '';
+    this.inputIndex = 0;
   }
 
   private static colorDifference(from: Color, to: Color): [number, number] {
@@ -213,6 +217,19 @@ export class PietInterpreter {
       if (top !== undefined) {
         this.stack.push(top, top);
       }
+    } else if (hueDiff === 4 && lightnessDiff === 2) { // in(number)
+      let match = /[+-]?[0-9]+/.exec(this.input.slice(this.inputIndex));
+      if (match && match.index === 0) {
+        this.inputIndex += match[0].length;
+        const num = parseInt(match[0]);
+        this.stack.push(num);
+      }
+    } else if (hueDiff === 5 && lightnessDiff === 0) { // in(char)
+      const codePoint = this.input.codePointAt(this.inputIndex);
+      if (codePoint) {
+        this.inputIndex++;
+        this.stack.push(codePoint);
+      }
     } else if (hueDiff === 5 && lightnessDiff === 1) { // out(number)
       const top = this.stack.pop();
       if (top !== undefined) {
@@ -227,7 +244,8 @@ export class PietInterpreter {
     // TODO 他のコマンドも実装する
   }
 
-  public run(): { stack: number[], output: string } {
+  public run(input?: string): { stack: number[], output: string } {
+    this.input = input ?? '';
     let steps = 0;
     // HACK: 最初の位置がDP, CC方向の場所でないため、移動する
     // move()の改良で、最初の位置も考慮に入れて一般化できそう
