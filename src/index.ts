@@ -280,8 +280,8 @@ export class PietInterpreter {
           this.executeCommand(currentColor, nextColor);
         }
         steps++;
-        if (steps > 100) {
-          console.log('steps > 100');
+        if (steps > 1000000) {
+          console.log('steps > 1000000');
           return { stack: this.stack, output: this.output };
         }
       }
